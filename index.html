@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartSociety</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#060910;--s2:#111827;--border:rgba(255,255,255,.08);--accent:#00d4ff;--purple:#7c3aed;--pink:#f0abfc;--text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,212,255,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(124,58,237,.08) 0%,transparent 60%)}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 6%;height:62px;background:rgba(6,9,16,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none}
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+.brand-name{font-size:17px;font-weight:700;color:var(--text)}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav-btn{background:none;border:none;color:var(--muted2);font-size:13px;padding:7px 13px;border-radius:8px;cursor:pointer;transition:all .2s;font-family:inherit}
+.nav-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.nav-btn.active{color:var(--accent);background:rgba(0,212,255,.08)}
+.nav-btn.cta{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;font-weight:500}
+
+/* PAGES */
+.page{display:none;position:relative;z-index:1}
+.page.show{display:block}
+
+/* HERO */
+.hero{min-height:88vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 6%}
+.hero-badge{display:inline-block;padding:5px 15px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:100px;font-size:12px;font-weight:500;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin-bottom:26px}
+.hero h1{font-size:clamp(38px,7vw,74px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:22px}
+.grad{background:linear-gradient(90deg,var(--accent),var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero>p{color:var(--muted2);font-size:17px;max-width:500px;line-height:1.7;margin-bottom:36px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:64px}
+.stats{display:flex;gap:44px;flex-wrap:wrap;justify-content:center}
+.stat .num{font-size:30px;font-weight:800;color:var(--text)}
+.stat .num span{color:var(--accent)}
+.stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .25s;font-family:inherit}
+.btn-p{background:linear-gradient(135deg,var(--accent),#00a8d0);color:#060910;font-weight:600;box-shadow:0 0 28px rgba(0,212,255,.25)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 0 42px rgba(0,212,255,.4)}
+.btn-s{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+.btn-s:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+.btn-g{background:transparent;color:var(--muted2);border:1px solid var(--border);padding:8px 16px;font-size:13px}
+.btn-g:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn-d{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);padding:8px 16px;font-size:13px}
+.btn-d:hover{background:rgba(239,68,68,.2)}
+
+/* SECTION */
+.sec{padding:50px 6%}
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;flex-wrap:wrap;gap:10px}
+.sec-title{font-size:21px;font-weight:700}
+.sec-sub{font-size:13px;color:var(--muted)}
+
+/* GRID + CARD */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:22px;transition:all .3s;position:relative}
+.card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.2);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.card-icon{width:42px;height:42px;border-radius:12px;font-size:20px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15)}
+.card-icon.art{background:rgba(240,171,252,.08);border-color:rgba(240,171,252,.15)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.card p{font-size:13px;color:var(--muted2);line-height:1.6}
+.tag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.tag-t{background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2)}
+.tag-a{background:rgba(240,171,252,.1);color:var(--pink);border:1px solid rgba(240,171,252,.2)}
+
+/* FILTER */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.f-btn{padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted2);font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.f-btn:hover,.f-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.06)}
+
+/* PAGE HERO */
+.ph{padding:50px 6% 24px}
+.ph h1{font-size:clamp(26px,4vw,42px);font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.ph p{color:var(--muted2);font-size:15px}
+
+/* SEARCH */
+.search-wrap{margin-top:16px;max-width:300px}
+.search-wrap input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;outline:none;font-family:inherit;transition:all .2s}
+.search-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.1)}
+.search-wrap input::placeholder{color:var(--muted)}
+
+/* ANN */
+.ann{display:flex;gap:18px;padding:22px;border-radius:16px;background:var(--s2);border:1px solid var(--border);margin-bottom:14px;transition:all .3s}
+.ann:hover{border-color:rgba(0,212,255,.15);transform:translateX(4px)}
+.ann-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.ann-dot.pu{background:#a78bfa}
+.ann-dot.pi{background:var(--pink)}
+.ann-body h3{font-size:15px;font-weight:700;margin-bottom:7px}
+.ann-body p{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:12px}
+.ann-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+
+/* LOGIN */
+.login-wrap{min-height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:40px 6%}
+.form-box{background:var(--s2);border:1px solid var(--border);border-radius:22px;padding:36px 40px;width:100%;max-width:400px}
+.form-logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:28px}
+.form-logo .logo{width:46px;height:46px;border-radius:13px;font-size:21px;box-shadow:0 0 36px rgba(0,212,255,.2)}
+.form-title{font-size:21px;font-weight:800}
+.form-sub{font-size:13px;color:var(--muted)}
+.role-toggle{display:flex;gap:6px;padding:4px;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,.04);margin-bottom:22px}
+.r-btn{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--muted2);font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:500}
+.r-btn.on{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:12px;color:var(--muted2);margin-bottom:6px;font-weight:500}
+.fg input{width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;outline:none;transition:all .2s;font-family:inherit}
+.fg input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.1)}
+.fg input::placeholder{color:var(--muted)}
+.field-err{color:#f87171;font-size:11px;margin-top:4px;min-height:16px}
+.login-btn{width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--accent),#00a8d0);color:#060910;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;font-family:inherit;margin-top:6px;box-shadow:0 0 28px rgba(0,212,255,.25)}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 0 42px rgba(0,212,255,.4)}
+
+/* DEMO PANEL */
+.demo-panel{width:100%;max-width:400px;background:var(--s2);border:1px solid rgba(251,191,36,.2);border-radius:18px;padding:18px 20px}
+.demo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.demo-badge{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:#fbbf24;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 11px;border-radius:100px}
+.demo-hint{font-size:12px;color:var(--muted)}
+.demo-card{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;transition:all .25s;margin-bottom:10px}
+.demo-card:last-child{margin-bottom:0}
+.demo-card:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.demo-card.st:hover{border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04)}
+.demo-card.ad:hover{border-color:rgba(124,58,237,.35);background:rgba(124,58,237,.04)}
+.demo-av{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.av-s{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.2)}
+.av-a{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25)}
+.demo-info{flex:1}
+.demo-name{font-size:14px;font-weight:600;color:var(--text)}
+.demo-role{font-size:11px;color:var(--muted);margin-top:2px}
+.demo-creds-col{font-family:monospace;font-size:11px;color:var(--muted2);line-height:1.8;text-align:right}
+.use-btn{font-size:12px;font-weight:600;color:var(--muted);padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.04);flex-shrink:0;transition:all .2s}
+.demo-card.st:hover .use-btn{color:var(--accent);border-color:rgba(0,212,255,.3)}
+.demo-card.ad:hover .use-btn{color:#a78bfa;border-color:rgba(124,58,237,.3)}
+
+/* ADMIN */
+.admin-wrap{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 62px)}
+.sidebar{background:rgba(13,17,23,.9);border-right:1px solid var(--border);padding:24px 0}
+.sb-sec{padding:0 14px;margin-bottom:24px}
+.sb-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;margin-bottom:8px;padding:0 6px}
+.sb-link{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--muted2);font-size:13px;margin-bottom:3px;cursor:pointer;transition:all .2s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.sb-link:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.sb-link.on{background:rgba(0,212,255,.08);color:var(--accent);border:1px solid rgba(0,212,255,.12)}
+.admin-main{padding:40px 44px}
+.admin-hd{margin-bottom:32px}
+.admin-hd h1{font-size:24px;font-weight:800;margin-bottom:4px}
+.admin-hd p{color:var(--muted);font-size:14px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+.sc{background:var(--s2);border:1px solid var(--border);border-radius:13px;padding:18px}
+.sc .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.sc .v{font-size:27px;font-weight:800}
+.v.c{color:var(--accent)}.v.p{color:#a78bfa}.v.pk{color:var(--pink)}
+.pub-form{background:var(--s2);border:1px solid var(--border);border-radius:18px;padding:26px 28px;max-width:500px;margin-bottom:36px}
+.pub-form label{display:block;font-size:12px;color:var(--muted2);margin-bottom:6px;font-weight:500}
+.pub-form input,.pub-form select,.pub-form textarea{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);font-size:13px;outline:none;transition:all .2s;font-family:inherit;margin-bottom:14px}
+.pub-form input:focus,.pub-form select:focus,.pub-form textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.1)}
+.pub-form select option{background:#111827}
+.pub-form textarea{min-height:90px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tw{background:var(--s2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:6px}
+.tw-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.tw-hd h3{font-size:15px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;padding:0 14px 12px;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;color:var(--muted2);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+td strong{color:var(--text);font-weight:500}
+.acts{display:flex;gap:8px}
+
+/* RECOMMENDATION */
+.rec-sec{padding:0 6% 70px}
+.rec-locked{text-align:center;padding:68px 20px;background:linear-gradient(135deg,rgba(0,212,255,.04),rgba(124,58,237,.05));border:1px solid rgba(255,255,255,.06);border-radius:26px}
+.rec-locked h2{font-size:clamp(26px,4vw,44px);font-weight:800;letter-spacing:-1px;margin:14px 0 12px}
+.rec-locked p{color:var(--muted2);font-size:15px;margin-bottom:26px}
+.rec-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+.rec-pill{padding:7px 15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;font-size:13px;color:var(--muted2)}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.rc{background:var(--s2);border:1px solid var(--border);border-radius:18px;padding:22px;transition:all .3s;position:relative}
+.rc:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.2);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.rc.top{border-color:rgba(0,212,255,.22);background:linear-gradient(135deg,rgba(0,212,255,.04),var(--s2))}
+.rc.top::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:18px 18px 0 0}
+.rc-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.rc-icon{width:42px;height:42px;border-radius:11px;font-size:20px;display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15)}
+.rc-icon.art{background:rgba(240,171,252,.08);border-color:rgba(240,171,252,.15)}
+.rc-score-num{font-size:22px;font-weight:800;line-height:1;text-align:right}
+.rc-score-num.hi{color:var(--accent)}.rc-score-num.md{color:#a78bfa}.rc-score-num.lo{color:var(--muted2)}
+.rc-score-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);text-align:right}
+.rc-name{font-size:16px;font-weight:700;margin-bottom:7px}
+.rc-about{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:13px}
+.rc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.rt{padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.rt-r{background:rgba(0,212,255,.08);color:var(--accent);border:1px solid rgba(0,212,255,.15)}
+.rt-s{background:rgba(167,139,250,.08);color:#a78bfa;border:1px solid rgba(167,139,250,.15)}
+.rt-c{background:rgba(240,171,252,.08);color:var(--pink);border:1px solid rgba(240,171,252,.15)}
+.rc-matches{border-top:1px solid rgba(255,255,255,.05);padding-top:11px;display:flex;flex-wrap:wrap;gap:5px}
+.rm{padding:3px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.rm-i{background:rgba(0,212,255,.1);color:var(--accent)}
+.rm-s{background:rgba(167,139,250,.1);color:#a78bfa}
+.rm-r{background:rgba(240,171,252,.1);color:var(--pink)}
+.rm-n{font-size:12px;color:var(--muted);font-style:italic}
+.top-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.25);border-radius:100px;padding:3px 9px;font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:9px}
+.ptags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.pt{padding:4px 12px;border-radius:100px;font-size:12px;display:inline-flex;align-items:center;gap:5px}
+.pt-i{background:rgba(0,212,255,.08);color:var(--accent);border:1px solid rgba(0,212,255,.15)}
+.pt-s{background:rgba(167,139,250,.08);color:#a78bfa;border:1px solid rgba(167,139,250,.15)}
+.pt-r{background:rgba(240,171,252,.08);color:var(--pink);border:1px solid rgba(240,171,252,.15)}
+
+/* PROFILE MODAL */
+.mo{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:20px}
+.mb{background:#0d1117;border:1px solid rgba(255,255,255,.1);border-radius:22px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#1e293b transparent}
+.mh{padding:28px 32px 20px;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;background:#0d1117;border-radius:22px 22px 0 0;z-index:2}
+.step-bar{display:flex;gap:5px;margin-bottom:16px}
+.sd{height:3px;border-radius:2px;flex:1;background:rgba(255,255,255,.1);transition:background .3s}
+.sd.done{background:rgba(0,212,255,.4)}.sd.now{background:var(--accent)}
+.slbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:6px}
+.stitle{font-size:19px;font-weight:800;color:var(--text)}
+.ssub{font-size:13px;color:var(--muted);margin-top:4px}
+.mbd{padding:24px 32px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted2);font-size:13px;cursor:pointer;transition:all .2s;user-select:none;font-family:inherit}
+.chip:hover{border-color:rgba(0,212,255,.4);color:var(--text);background:rgba(0,212,255,.06)}
+.chip.si{border-color:var(--accent);background:rgba(0,212,255,.12);color:var(--accent);font-weight:500}
+.chip.ss{border-color:#a78bfa;background:rgba(167,139,250,.12);color:#a78bfa;font-weight:500}
+.chip.sr{border-color:var(--pink);background:rgba(240,171,252,.12);color:var(--pink);font-weight:500}
+.mf{padding:14px 32px 26px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+.mcnt{font-size:12px;color:var(--muted)}
+.mcnt strong{color:var(--accent)}
+.mnav{display:flex;gap:8px}
+.mb-back,.mb-next,.mb-fin,.mb-skip{padding:9px 20px;border-radius:10px;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+.mb-back{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.mb-back:hover{color:var(--text)}
+.mb-next{background:linear-gradient(135deg,var(--accent),#00a8d0);color:#060910;font-weight:600}
+.mb-next:hover{transform:translateY(-1px)}
+.mb-fin{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;font-weight:600}
+.mb-fin:hover{transform:translateY(-1px)}
+.mb-skip{background:none;color:var(--muted);font-size:12px;padding:4px 0;text-decoration:underline}
+
+/* TOAST */
+#toasts{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:9px;z-index:9999}
+.toast{background:#111827;border:1px solid rgba(0,212,255,.2);border-left:3px solid var(--accent);color:var(--text);padding:12px 16px;border-radius:11px;font-size:13px;max-width:280px;box-shadow:0 8px 28px rgba(0,0,0,.4);cursor:pointer;animation:tIn .3s ease}
+.toast.err{border-color:rgba(248,113,113,.2);border-left-color:#f87171}
+.toast.info{border-color:rgba(167,139,250,.2);border-left-color:#a78bfa}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);background:rgba(6,9,16,.9);padding:22px 6%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:relative;z-index:1}
+.fb{font-size:15px;font-weight:700}
+.fc{font-size:13px;color:var(--muted)}
+.fl{display:flex;gap:18px}
+.fl button{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit}
+.fl button:hover{color:var(--accent)}
+
+@media(max-width:768px){
+  nav{padding:0 4%}
+  .sec,.ph,.rec-sec{padding-left:4%;padding-right:4%}
+  .admin-wrap{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .admin-main{padding:24px 4%}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .demo-creds-col{display:none}
+  footer{flex-direction:column;text-align:center}
+}
+@media(max-width:480px){
+  .form-box{padding:26px 20px}
+  .grid{grid-template-columns:1fr}
+  .rec-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toasts"></div>
+
+<!-- ── NAV ─────────────────────────────────────────── -->
+<nav>
+  <div class="brand" onclick="go('home')">
+    <div class="logo">S</div>
+    <div class="brand-name">SmartSociety</div>
+  </div>
+  <div class="nav-links" id="navlinks">
+    <button class="nav-btn active" id="n-home"          onclick="go('home')">Home</button>
+    <button class="nav-btn"        id="n-societies"     onclick="go('societies')">Societies</button>
+    <button class="nav-btn"        id="n-announcements" onclick="go('announcements')">Announcements</button>
+    <button class="nav-btn cta"    id="n-login"         onclick="go('login')">Login</button>
+  </div>
+</nav>
+
+<!-- ── HOME ────────────────────────────────────────── -->
+<div class="page show" id="p-home">
+
+  <div class="hero">
+    <div class="hero-badge">🎓 Campus Life, Reimagined</div>
+    <h1>Discover Your<br><span class="grad">Campus Vibe</span></h1>
+    <p>An intelligent platform connecting students with societies, events, and opportunities — powered by your interests.</p>
+    <div class="hero-cta">
+      <button class="btn btn-p" onclick="go('societies')">Explore Societies →</button>
+      <button class="btn btn-s" onclick="go('login')">Get Started Free</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">8<span>+</span></div><div class="lbl">Societies</div></div>
+      <div class="stat"><div class="num">500<span>+</span></div><div class="lbl">Students</div></div>
+      <div class="stat"><div class="num">30<span>+</span></div><div class="lbl">Events / Year</div></div>
+      <div class="stat"><div class="num">1<span> campus</span></div><div class="lbl">Community</div></div>
+    </div>
+  </div>
+
+  <div class="sec" style="padding-top:10px;padding-bottom:60px">
+    <div class="sec-head"><div class="sec-title">Why SmartSociety?</div></div>
+    <div class="grid">
+      <div class="card"><div class="card-icon">🔍</div><h3>Smart Discovery</h3><p>Browse and filter societies by category — tech, arts, sports and more.</p></div>
+      <div class="card"><div class="card-icon art">📢</div><h3>Live Announcements</h3><p>Stay updated with real-time announcements from every society.</p></div>
+      <div class="card"><div class="card-icon" style="background:rgba(240,171,252,.08);border-color:rgba(240,171,252,.15)">⚡</div><h3>Admin Dashboard</h3><p>Society heads can publish events and post updates instantly.</p></div>
+    </div>
+  </div>
+
+  <div class="sec" style="padding-top:0;padding-bottom:50px">
+    <div class="sec-head">
+      <div class="sec-title">Featured Societies</div>
+      <button class="btn btn-g" onclick="go('societies')">View all →</button>
+    </div>
+    <div class="grid" id="h-featured"></div>
+  </div>
+
+  <div class="rec-sec" id="rec-sec"></div>
+</div>
+
+<!-- ── SOCIETIES ───────────────────────────────────── -->
+<div class="page" id="p-societies">
+  <div class="ph">
+    <h1>All Societies</h1>
+    <p>Find your community — from competitive coders to creative performers.</p>
+    <div class="search-wrap"><input type="text" id="soc-search" placeholder="🔍 Search societies..." oninput="renderSoc()"></div>
+  </div>
+  <div class="sec" style="padding-top:20px">
+    <div class="filters" id="soc-filters"></div>
+    <div id="soc-list"></div>
+  </div>
+</div>
+
+<!-- ── ANNOUNCEMENTS ───────────────────────────────── -->
+<div class="page" id="p-announcements">
+  <div class="ph"><h1>Announcements</h1><p>Stay in the loop with the latest updates from every society.</p></div>
+  <div class="sec" style="padding-top:20px">
+    <div class="filters" id="ann-filters"></div>
+    <div id="ann-list"></div>
+  </div>
+</div>
+
+<!-- ── LOGIN ───────────────────────────────────────── -->
+<div class="page" id="p-login">
+  <div class="login-wrap">
+
+    <div class="form-box">
+      <div class="form-logo">
+        <div class="logo" style="width:46px;height:46px;border-radius:13px;font-size:21px">S</div>
+        <div class="form-title">Welcome Back</div>
+        <div class="form-sub" id="l-sub">Sign in to your SmartSociety account</div>
+      </div>
+      <div class="role-toggle">
+        <button class="r-btn on" id="rb-s" onclick="setRole('student')">🎓 Student</button>
+        <button class="r-btn"    id="rb-a" onclick="setRole('admin')">🛠 Admin</button>
+      </div>
+      <div class="fg">
+        <label>Email</label>
+        <input type="email" id="l-email" placeholder="you@university.edu">
+        <div class="field-err" id="e-email"></div>
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <input type="password" id="l-pass" placeholder="Enter your password">
+        <div class="field-err" id="e-pass"></div>
+      </div>
+      <button class="login-btn" id="l-btn" onclick="doLogin()">Login →</button>
+      <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--muted)">New here? <span style="color:var(--accent);cursor:pointer">Request access</span></div>
+    </div>
+
+    <!-- DEMO PANEL -->
+    <div class="demo-panel">
+      <div class="demo-head">
+        <span class="demo-badge">🧪 Test Accounts</span>
+        <span class="demo-hint">Click a card to auto-login</span>
+      </div>
+
+      <div class="demo-card st" onclick="quickLogin('student')">
+        <div class="demo-av av-s">🎓</div>
+        <div class="demo-info">
+          <div class="demo-name">Alex Student</div>
+          <div class="demo-role">Student Account</div>
+        </div>
+        <div class="demo-creds-col">
+          <div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3142454455545f4571445f58475443425845481f545544">[email&#160;protected]</a></div>
+          <div>student123</div>
+        </div>
+        <div class="use-btn">Use →</div>
+      </div>
+
+      <div class="demo-card ad" onclick="quickLogin('admin')">
+        <div class="demo-av av-a">🛠</div>
+        <div class="demo-info">
+          <div class="demo-name">Admin User</div>
+          <div class="demo-role">Admin Account</div>
+        </div>
+        <div class="demo-creds-col">
+          <div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dbbabfb6b2b59baeb5b2adbea9a8b2afa2f5bebfae">[email&#160;protected]</a></div>
+          <div>admin123</div>
+        </div>
+        <div class="use-btn">Use →</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── ADMIN ───────────────────────────────────────── -->
+<div class="page" id="p-admin">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sb-sec">
+        <div class="sb-lbl">Dashboard</div>
+        <button class="sb-link on" onclick="aTab(this,'overview')">🏠  Overview</button>
+        <button class="sb-link"    onclick="aTab(this,'publish')">📢  Publish</button>
+        <button class="sb-link"    onclick="aTab(this,'manage')">📋  Manage</button>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">Account</div>
+        <button class="sb-link" onclick="doLogout()">🚪  Logout</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-hd">
+        <h1 id="admin-name">Admin Dashboard</h1>
+        <p>Manage societies, announcements, and campus activity.</p>
+      </div>
+      <div class="stats-row">
+        <div class="sc"><div class="l">Societies</div><div class="v c">8</div></div>
+        <div class="sc"><div class="l">Announcements</div><div class="v p" id="a-stat">5</div></div>
+        <div class="sc"><div class="l">Active Members</div><div class="v">512</div></div>
+        <div class="sc"><div class="l">Events This Month</div><div class="v pk" id="e-stat">4</div></div>
+      </div>
+
+      <!-- PUBLISH -->
+      <div id="tab-pub" style="display:none">
+        <div class="sec-head" style="margin-bottom:18px"><div class="sec-title">📢 Publish Announcement</div></div>
+        <div class="pub-form">
+          <label>Society</label>
+          <select id="p-soc">
+            <option value="">— Select Society —</option>
+            <option>Nebula</option><option>Binary Club</option><option>CSSS</option>
+            <option>GFG Student Chapter</option><option>IOTUINO</option>
+            <option>Art Society</option><option>Dance X</option><option>Dance Y</option>
+          </select>
+          <label>Title</label>
+          <input type="text" id="p-title" placeholder="e.g. Workshop this Saturday at 4 PM">
+          <label>Message</label>
+          <textarea id="p-msg" placeholder="Write the full announcement..."></textarea>
+          <div class="two">
+            <div><label>Date</label><input type="text" id="p-date" placeholder="Mar 5, 2026"></div>
+            <div><label>Location</label><input type="text" id="p-loc" placeholder="Lab 302"></div>
+          </div>
+          <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:6px" onclick="pubAnn()">Publish →</button>
+        </div>
+      </div>
+
+      <!-- MANAGE TABLE -->
+      <div id="tab-mgr">
+        <div class="sec-head" style="margin-bottom:16px">
+          <div class="sec-title">📋 Manage Announcements</div>
+          <span class="sec-sub" id="ann-lbl"></span>
+        </div>
+        <div class="tw">
+          <div class="tw-hd"><h3>All Announcements</h3></div>
+          <table><thead><tr><th>Society</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="a-table"></tbody></table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="fb">SmartSociety</div>
+  <div class="fc">© 2026 Smart Society Discovery Platform</div>
+  <div class="fl">
+    <button onclick="go('societies')">Societies</button>
+    <button onclick="go('announcements')">Announcements</button>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const SOC = [
+  {id:1,name:'Nebula',cat:'Technical',icon:'🚀',desc:'Innovation & emerging technologies. Building the future one project at a time.',about:'We build real-world tech products — AI tools, SaaS apps, and more.',roles:['Project Lead','AI Researcher','Developer','Designer'],skills:['Python','Machine Learning','React','Cloud'],kw:['ai','ml','innovation','tech','startup']},
+  {id:2,name:'Binary Club',cat:'Technical',icon:'💻',desc:'Competitive coding community. DSA, hackathons, and inter-college contests.',about:'We compete at Codeforces, LeetCode, and inter-college hackathons. Weekly practice sessions for all levels.',roles:['Competitive Coder','Mentor','Contest Organizer'],skills:['C++','Data Structures','Algorithms','Problem Solving'],kw:['coding','dsa','competitive','hackathon','algorithms']},
+  {id:3,name:'CSSS',cat:'Technical',icon:'🎓',desc:'Computer Science Student Society — workshops, seminars, and career events.',about:'CSSS bridges academia and industry. Career talks, company visits, and skill workshops for CS students.',roles:['Event Coordinator','Speaker Liaison','Content Writer'],skills:['Communication','Event Management','Networking'],kw:['career','workshop','seminar','networking','placement']},
+  {id:4,name:'GFG Student Chapter',cat:'Technical',icon:'📗',desc:'GeeksforGeeks campus chapter. Practice problems, mock interviews, and webinars.',about:'Official GFG campus chapter helping students crack placements through structured DSA prep and mock interviews.',roles:['Chapter Lead','Content Creator','Interview Coach'],skills:['DSA','System Design','Interview Prep','Teaching'],kw:['gfg','interview','placement','dsa','practice']},
+  {id:5,name:'IOTUINO',cat:'Technical',icon:'🔌',desc:'IoT & hardware innovation. Arduino projects, embedded systems, and robotics.',about:'We build real hardware — smart sensors, Arduino bots, and IoT systems. Members get hands-on lab access.',roles:['Hardware Engineer','Embedded Developer','Robotics Lead'],skills:['Arduino','IoT','Embedded C','Circuitry'],kw:['iot','arduino','hardware','robotics','electronics']},
+  {id:6,name:'Art Society',cat:'Art & Culture',icon:'🖼️',desc:'Creative art exhibitions, live painting events, and collaborative murals.',about:'We celebrate campus creativity through exhibitions, live art jams, and semester murals.',roles:['Curator','Visual Artist','Mural Lead','Social Media Designer'],skills:['Illustration','Painting','Digital Art','Figma'],kw:['art','painting','design','creative','illustration']},
+  {id:7,name:'Dance X',cat:'Art & Culture',icon:'💃',desc:'Contemporary and freestyle dance. Workshops, battles, and annual showcases.',about:'The campus hub for modern dance styles. We perform at fests, host battles, and train new dancers through workshops.',roles:['Choreographer','Performer','Workshop Instructor'],skills:['Contemporary','Hip-hop','Freestyle','Choreography'],kw:['dance','contemporary','freestyle','performance','hip-hop']},
+  {id:8,name:'Dance Y',cat:'Art & Culture',icon:'🪷',desc:'Classical and cultural dance forms. Preserving heritage through movement.',about:'We preserve and promote classical Indian dance forms through regular recitals and guru-shishya workshops.',roles:['Classical Dancer','Cultural Ambassador','Costume Designer'],skills:['Bharatanatyam','Kathak','Folk Dance'],kw:['dance','classical','cultural','heritage','bharatanatyam']},
+];
+
+const DEFAULT_ANNS = [
+  {id:1,soc:'Nebula',      cat:'Technical',   title:'AI & ML Workshop — This Saturday',              msg:'Hands-on workshop covering neural networks, model training, and real-world applications. Bring your laptop.',date:'Feb 28, 2026',time:'4:00 PM',loc:'Lab 302',dot:''},
+  {id:2,soc:'Binary Club', cat:'Technical',   title:'Competitive Coding Contest — Next Week',         msg:'Monthly contest happening next Friday. Problems range from beginner to advanced. Top 3 win certificates.',date:'Mar 6, 2026', time:'2:00 PM',loc:'Online (CodeChef)',dot:'pu'},
+  {id:3,soc:'Dance X',     cat:'Art & Culture',title:'Annual Dance Showcase — Registrations Open',   msg:'Solo and group entries welcome in contemporary, hip-hop, and fusion categories. Last date: March 10.',date:'Mar 20, 2026',time:'6:00 PM',loc:'Main Auditorium',dot:'pi'},
+  {id:4,soc:'CSSS',        cat:'Technical',   title:'Career Talk: SDE Roles at Top Product Companies',msg:'Industry veterans share insights on cracking placements and SDE interview processes. Open to all.',date:'Mar 3, 2026', time:'11:00 AM',loc:'Seminar Hall B',dot:''},
+  {id:5,soc:'IOTUINO',     cat:'Technical',   title:'IoT Hardware Hackathon — Team Registrations',   msg:'Form a team of 2–4. Build a working prototype in 24 hours. Hardware kits and mentors provided.',date:'Mar 15, 2026',time:'9:00 AM',loc:'Innovation Lab',dot:'pu'},
+];
+
+const CREDS = {
+  student:{email:'student@university.edu',pass:'student123',role:'student',name:'Alex Student'},
+  admin:  {email:'admin@university.edu',  pass:'admin123',  role:'admin',  name:'Admin User'},
+};
+
+const INTERESTS = [{l:'Artificial Intelligence',i:'🤖'},{l:'Competitive Coding',i:'⌨️'},{l:'Web Development',i:'🌐'},{l:'IoT & Hardware',i:'🔌'},{l:'Machine Learning',i:'📊'},{l:'Robotics',i:'🦾'},{l:'Visual Arts',i:'🎨'},{l:'Dance & Performing Arts',i:'💃'},{l:'Photography',i:'📷'},{l:'Career & Placements',i:'💼'},{l:'Open Source',i:'🔓'},{l:'Startups & Innovation',i:'🚀'}];
+const SKILLS    = [{l:'Python',i:'🐍'},{l:'C++',i:'⚡'},{l:'JavaScript',i:'🟨'},{l:'React',i:'⚛️'},{l:'Machine Learning',i:'🧠'},{l:'Arduino',i:'🔧'},{l:'UI/UX Design',i:'🎯'},{l:'Figma',i:'✏️'},{l:'DSA',i:'🌳'},{l:'Cloud (AWS/GCP)',i:'☁️'},{l:'Embedded C',i:'💾'},{l:'Illustration',i:'🖼️'}];
+const ROLES     = [{l:'Developer',i:'👨‍💻'},{l:'Researcher',i:'🔬'},{l:'Designer',i:'🎨'},{l:'Competitive Coder',i:'🏆'},{l:'Event Organizer',i:'📅'},{l:'Performer',i:'🎭'},{l:'Mentor/Educator',i:'👨‍🏫'},{l:'Hardware Engineer',i:'🔩'}];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let sess=null, prof=null, anns=[...DEFAULT_ANNS], socF='All', annF='All', role='student';
+
+function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function lw(k,v){localStorage.setItem(k,JSON.stringify(v))}
+
+function load(){sess=ls('ss_sess',null);prof=ls('ss_prof',null);anns=ls('ss_anns',DEFAULT_ANNS)}
+function save(){lw('ss_sess',sess);lw('ss_prof',prof);lw('ss_anns',anns)}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg,type=''){
+  const w=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  t.textContent=msg;
+  w.appendChild(t);
+  t.onclick=()=>t.remove();
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},3200);
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  document.getElementById('p-'+page).classList.add('show');
+  document.querySelectorAll('.nav-btn[id^="n-"]').forEach(b=>b.classList.remove('active'));
+  const nb=document.getElementById('n-'+page);
+  if(nb)nb.classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='societies')renderSoc();
+  if(page==='announcements')renderAnn();
+  if(page==='home'){renderFeatured();renderRec()}
+}
+
+function updNav(){
+  const lb=document.getElementById('n-login');
+  const existing=document.getElementById('n-admin');
+  if(sess&&sess.loggedIn){
+    lb.textContent='👤 '+sess.name.split(' ')[0];
+    lb.className='nav-btn';
+    lb.onclick=()=>{if(confirm('Log out?'))doLogout()};
+    if(sess.role==='admin'&&!existing){
+      const ab=document.createElement('button');
+      ab.id='n-admin';ab.className='nav-btn';ab.textContent='🛠 Dashboard';
+      ab.style.color='var(--pink)';
+      ab.onclick=()=>go('admin');
+      document.getElementById('navlinks').insertBefore(ab,lb);
+    }
+  } else {
+    lb.textContent='Login';lb.className='nav-btn cta';lb.onclick=()=>go('login');
+    existing&&existing.remove();
+  }
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function setRole(r){
+  role=r;
+  document.getElementById('rb-s').classList.toggle('on',r==='student');
+  document.getElementById('rb-a').classList.toggle('on',r==='admin');
+  document.getElementById('l-sub').textContent=r==='admin'?'Admin access — enter your credentials':'Sign in to your SmartSociety account';
+  document.getElementById('l-email').placeholder=r==='admin'?'admin@university.edu':'you@university.edu';
+}
+
+function quickLogin(r){
+  const c=CREDS[r];
+  setRole(r);
+  document.getElementById('l-email').value=c.email;
+  document.getElementById('l-pass').value=c.pass;
+  setTimeout(doLogin,180);
+}
+
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const ee=document.getElementById('e-email');
+  const ep=document.getElementById('e-pass');
+  ee.textContent='';ep.textContent='';
+
+  if(!email){ee.textContent='Email is required.';return}
+  if(!pass){ep.textContent='Password is required.';return}
+
+  const c=CREDS[role];
+  if(c&&c.email===email&&c.pass===pass){
+    sess={role:c.role,name:c.name,loggedIn:true};
+    save();updNav();
+    const btn=document.getElementById('l-btn');
+    btn.textContent='✓ Logged in!';
+    btn.style.background='linear-gradient(135deg,#34d399,#059669)';
+    toast('Welcome back, '+c.name+'! 👋');
+    setTimeout(()=>{
+      btn.textContent='Login →';btn.style.background='';
+      if(sess.role==='admin'){renderAdminTab();go('admin')}
+      else if(!prof){go('home');setTimeout(showProfileModal,400)}
+      else go('home');
+    },700);
+  } else {
+    ep.textContent='Wrong email or password.';
+    toast('Login failed — check credentials.','err');
+  }
+}
+
+function doLogout(){
+  sess=null;prof=null;
+  lw('ss_sess',null);lw('ss_prof',null);
+  updNav();toast('Logged out.','info');go('home');
+}
+
+// ── SOCIETIES ─────────────────────────────────────────────────────────────────
+function renderFeatured(){
+  const items=[SOC[0],SOC[1],SOC[6],SOC[4]];
+  document.getElementById('h-featured').innerHTML=items.map(s=>`
+    <div class="card" style="cursor:pointer" onclick="go('societies')">
+      <span class="tag ${s.cat==='Technical'?'tag-t':'tag-a'}">${s.cat}</span>
+      <div class="card-icon ${s.cat==='Art & Culture'?'art':''}" style="margin-top:10px">${s.icon}</div>
+      <h3>${s.name}</h3><p>${s.desc}</p>
+    </div>`).join('');
+}
+
+function renderSoc(){
+  const q=(document.getElementById('soc-search')?.value||'').toLowerCase();
+  const cats=['All','Technical','Art & Culture'];
+  document.getElementById('soc-filters').innerHTML=cats.map(c=>
+    `<button class="f-btn ${socF===c?'on':''}" onclick="socF='${c}';renderSoc()">${c}</button>`
+  ).join('');
+  const list=SOC.filter(s=>(socF==='All'||s.cat===socF)&&(!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q)));
+  if(!list.length){document.getElementById('soc-list').innerHTML='<div style="text-align:center;padding:50px;color:var(--muted)">No societies found.</div>';return}
+  const groups={};list.forEach(s=>{(groups[s.cat]=groups[s.cat]||[]).push(s)});
+  document.getElementById('soc-list').innerHTML=Object.entries(groups).map(([cat,items])=>`
+    <div style="margin-bottom:36px">
+      <div class="sec-head"><div class="sec-title">${cat==='Technical'?'⚙️':'🎨'} ${cat}</div><span class="sec-sub">${items.length} societies</span></div>
+      <div class="grid">${items.map(s=>`
+        <div class="card">
+          <span class="tag ${s.cat==='Technical'?'tag-t':'tag-a'}">${s.cat}</span>
+          <div class="card-icon ${s.cat==='Art & Culture'?'art':''}" style="margin-top:10px">${s.icon}</div>
+          <h3>${s.name}</h3><p>${s.desc}</p>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────────
+function renderAnn(){
+  const fs=['All','Technical','Art & Culture'];
+  document.getElementById('ann-filters').innerHTML=fs.map(f=>
+    `<button class="f-btn ${annF===f?'on':''}" onclick="annF='${f}';renderAnn()">${f}</button>`
+  ).join('');
+  const list=anns.filter(a=>annF==='All'||a.cat===annF);
+  document.getElementById('ann-list').innerHTML=list.length
+    ?list.map(a=>`
+        <div class="ann">
+          <div class="ann-dot ${a.dot}"></div>
+          <div class="ann-body">
+            <span class="tag ${a.cat==='Technical'?'tag-t':'tag-a'}" style="margin-bottom:8px">${a.soc}</span>
+            <h3>${a.title}</h3><p>${a.msg}</p>
+            <div class="ann-meta">
+              ${a.date?`<span>📅 ${a.date}</span>`:''}
+              ${a.time?`<span>⏰ ${a.time}</span>`:''}
+              ${a.loc?`<span>📍 ${a.loc}</span>`:''}
+            </div>
+          </div>
+        </div>`).join('')
+    :'<div style="text-align:center;padding:50px;color:var(--muted)">No announcements yet.</div>';
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────────────
+function aTab(btn,tab){
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-pub').style.display=tab==='publish'?'block':'none';
+  document.getElementById('tab-mgr').style.display=tab!=='publish'?'block':'none';
+  if(tab!=='publish')renderAdminTab();
+}
+
+function renderAdminTab(){
+  document.getElementById('a-stat').textContent=anns.length;
+  document.getElementById('ann-lbl').textContent=anns.length+' total';
+  document.getElementById('e-stat').textContent=anns.filter(a=>a.date&&a.date.includes('2026')).length;
+  document.getElementById('a-table').innerHTML=anns.length
+    ?anns.map(a=>`<tr>
+        <td><span class="tag ${a.cat==='Technical'?'tag-t':'tag-a'}">${a.soc}</span></td>
+        <td><strong>${a.title}</strong></td>
+        <td>${a.date||'—'}</td>
+        <td class="acts">
+          <button class="btn btn-d" onclick="delAnn(${a.id})">Delete</button>
+        </td>
+      </tr>`).join('')
+    :'<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted)">No announcements yet.</td></tr>';
+}
+
+function pubAnn(){
+  const soc=document.getElementById('p-soc').value;
+  const title=document.getElementById('p-title').value.trim();
+  const msg=document.getElementById('p-msg').value.trim();
+  const date=document.getElementById('p-date').value.trim();
+  const loc=document.getElementById('p-loc').value.trim();
+  if(!soc||!title||!msg){toast('Fill in Society, Title, and Message.','err');return}
+  const s=SOC.find(x=>x.name===soc);
+  anns.unshift({id:Math.max(...anns.map(a=>a.id),0)+1,soc,cat:s?s.cat:'Technical',title,msg,date,loc,dot:s?.cat==='Art & Culture'?'pi':''});
+  save();renderAdminTab();
+  document.getElementById('p-soc').value='';
+  document.getElementById('p-title').value='';
+  document.getElementById('p-msg').value='';
+  document.getElementById('p-date').value='';
+  document.getElementById('p-loc').value='';
+  toast('Announcement published! ✅');
+}
+
+function delAnn(id){
+  if(!confirm('Delete this announcement?'))return;
+  anns=anns.filter(a=>a.id!==id);
+  save();renderAdminTab();
+  toast('Deleted.','info');
+}
+
+// ── RECOMMENDATIONS ───────────────────────────────────────────────────────────
+function score(s,p){
+  if(!p)return{sc:0,rs:[]};
+  const ints=(p.interests||[]).map(x=>x.toLowerCase());
+  const skls=(p.skills||[]).map(x=>x.toLowerCase());
+  const rols=(p.roleGoals||[]).map(x=>x.toLowerCase());
+  let sc=0;const rs=[];
+  if(ints.some(i=>s.cat.toLowerCase().includes(i))){sc+=5;rs.push({t:'i',l:s.cat})}
+  const hay=[s.name,s.desc,...s.kw].join(' ').toLowerCase();
+  ints.forEach(i=>{if(hay.includes(i)){sc+=3;rs.push({t:'i',l:i})}});
+  s.skills.forEach(sk=>{if(skls.some(u=>sk.toLowerCase().includes(u)||u.includes(sk.toLowerCase()))){sc+=4;rs.push({t:'s',l:sk})}});
+  s.roles.forEach(r=>{if(rols.some(u=>r.toLowerCase().includes(u.split(' ')[0]))){sc+=4;rs.push({t:'r',l:r})}});
+  return{sc,rs};
+}
+
+function renderRec(){
+  const sec=document.getElementById('rec-sec');
+  if(!sess||!sess.loggedIn){
+    sec.innerHTML=`<div class="rec-locked">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:600;margin-bottom:12px">✨ Personalised For You</div>
+      <h2>Smart Society<br><span class="grad">Recommendations</span></h2>
+      <p>Tell us your interests, skills, and goals — we'll match you with societies where you'll thrive.</p>
+      <div class="rec-pills">
+        <div class="rec-pill">🎯 Interest Matching</div>
+        <div class="rec-pill">🛠 Skill Scoring</div>
+        <div class="rec-pill">👤 Role Alignment</div>
+      </div>
+      <button class="btn btn-p" onclick="go('login')">Login to Get Recommendations →</button>
+    </div>`;
+    return;
+  }
+  if(!prof){
+    sec.innerHTML=`<div class="sec-head" style="margin-bottom:12px"><div class="sec-title">✨ Your Recommendations</div></div>
+    <div style="text-align:center;padding:56px 20px;background:var(--s2);border:1px solid var(--border);border-radius:18px">
+      <div style="font-size:44px;margin-bottom:14px">🎯</div>
+      <h3 style="font-size:19px;font-weight:700;margin-bottom:10px">Set up your profile to get matched</h3>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:22px">Tell us your interests, skills, and role goals.</p>
+      <button class="btn btn-p" onclick="showProfileModal()">Set Up My Profile →</button>
+    </div>`;
+    return;
+  }
+  const ranked=SOC.map(s=>({...s,...score(s,prof)})).sort((a,b)=>b.sc-a.sc||a.name.localeCompare(b.name));
+  const ptags=[
+    ...(prof.interests||[]).slice(0,3).map(x=>`<span class="pt pt-i">⚡ ${x}</span>`),
+    ...(prof.skills||[]).slice(0,3).map(x=>`<span class="pt pt-s">🛠 ${x}</span>`),
+    ...(prof.roleGoals||[]).slice(0,2).map(x=>`<span class="pt pt-r">👤 ${x}</span>`),
+  ].join('');
+  sec.innerHTML=`
+    <div class="sec-head" style="margin-bottom:10px">
+      <div class="sec-title">✨ Your Recommendations</div>
+      <button class="btn btn-g" onclick="showEditModal()">✏️ Edit Profile</button>
+    </div>
+    <div class="ptags">${ptags}</div>
+    <div class="rec-grid">${ranked.map((s,i)=>rcCard(s,i)).join('')}</div>`;
+}
+
+function rcCard(s,i){
+  const isTop=i<3&&s.sc>0;
+  const isArt=s.cat==='Art & Culture';
+  const sc=s.sc>=12?'hi':s.sc>=5?'md':'lo';
+  const seen=new Set();
+  const rs=(s.rs||[]).filter(r=>{const k=r.t+r.l;if(seen.has(k))return false;seen.add(k);return true}).slice(0,4);
+  const mHtml=rs.length?rs.map(r=>`<span class="rm rm-${r.t}">${r.t==='i'?'⚡':r.t==='s'?'🛠':'👤'} ${r.l}</span>`).join('')
+    :`<span class="rm-n">No direct match — explore anyway!</span>`;
+  return`<div class="rc ${isTop?'top':''}">
+    ${isTop?'<div class="top-badge">⭐ Top Pick</div>':''}
+    <div class="rc-hd">
+      <div class="rc-icon ${isArt?'art':''}">${s.icon}</div>
+      <div><div class="rc-score-num ${sc}">${s.sc}</div><div class="rc-score-lbl">match pts</div></div>
+    </div>
+    <div class="rc-name">${s.name}</div>
+    <div class="rc-about">${s.about}</div>
+    <div class="rc-tags">
+      ${s.roles.slice(0,2).map(r=>`<span class="rt rt-r">👤 ${r}</span>`).join('')}
+      ${s.skills.slice(0,2).map(r=>`<span class="rt rt-s">🛠 ${r}</span>`).join('')}
+      <span class="rt rt-c">📂 ${s.cat}</span>
+    </div>
+    <div class="rc-matches">${mHtml}</div>
+  </div>`;
+}
+
+// ── PROFILE MODAL ─────────────────────────────────────────────────────────────
+function showProfileModal(){
+  const p={interests:[],skills:[],roleGoals:[]};
+  let step=0;
+  const steps=[
+    {lbl:'Step 1 of 3',title:'What are you into?',      sub:'Pick your interests to find the right societies.',opts:INTERESTS,key:'interests',cls:'si'},
+    {lbl:'Step 2 of 3',title:'What skills do you have?',sub:'Pick skills you have or are learning.',          opts:SKILLS,   key:'skills',   cls:'ss'},
+    {lbl:'Step 3 of 3',title:'What role fits you best?',sub:"Choose roles you'd love in a society.",          opts:ROLES,    key:'roleGoals',cls:'sr'},
+  ];
+
+  const ov=document.createElement('div');ov.className='mo';
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+
+  function draw(){
+    const s=steps[step];const arr=p[s.key];const last=step===steps.length-1;
+    ov.innerHTML=`<div class="mb">
+      <div class="mh">
+        <div class="step-bar">${steps.map((_,i)=>`<div class="sd ${i<step?'done':i===step?'now':''}"></div>`).join('')}</div>
+        <div class="slbl">${s.lbl}</div>
+        <div class="stitle">${s.title}</div>
+        <div class="ssub">${s.sub}</div>
+      </div>
+      <div class="mbd">
+        <div class="chips">${s.opts.map(o=>`<div class="chip ${arr.includes(o.l)?s.cls:''}" data-l="${o.l}">${o.i} ${o.l}</div>`).join('')}</div>
+      </div>
+      <div class="mf">
+        <div><span class="mcnt"><strong>${arr.length}</strong> selected</span>${!last?'<br><button class="mb-skip" onclick="nxt()">Skip →</button>':''}</div>
+        <div class="mnav">
+          ${step>0?'<button class="mb-back" onclick="prv()">← Back</button>':''}
+          ${last?'<button class="mb-fin" onclick="fin()">🎯 Get Recommendations</button>':'<button class="mb-next" onclick="nxt()">Next →</button>'}
+        </div>
+      </div>
+    </div>`;
+    ov.querySelectorAll('.chip').forEach(c=>{
+      c.addEventListener('click',()=>{
+        const l=c.dataset.l;const idx=arr.indexOf(l);
+        if(idx===-1){arr.push(l);c.classList.add(s.cls)}else{arr.splice(idx,1);c.classList.remove(s.cls)}
+        ov.querySelector('.mcnt strong').textContent=arr.length;
+      });
+    });
+  }
+  window.nxt=()=>{step++;draw()};
+  window.prv=()=>{step--;draw()};
+  window.fin=()=>{prof=p;save();ov.remove();renderRec();toast('🎯 Profile saved! Here are your matches.');
+    document.getElementById('rec-sec').scrollIntoView({behavior:'smooth'})};
+  draw();
+}
+
+function showEditModal(){
+  const ex=prof||{interests:[],skills:[],roleGoals:[]};
+  const d={interests:[...ex.interests],skills:[...ex.skills],roleGoals:[...ex.roleGoals]};
+  const ov=document.createElement('div');ov.className='mo';
+
+  function cHtml(opts,arr,cls,key){
+    return opts.map(o=>`<div class="chip ${arr.includes(o.l)?cls:''}" data-key="${key}" data-l="${o.l}">${o.i} ${o.l}</div>`).join('');
+  }
+  ov.innerHTML=`<div class="mb">
+    <div class="mh" style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div><div class="stitle">✏️ Edit My Profile</div><div class="ssub">Refine picks to improve recommendations.</div></div>
+      <button onclick="document.querySelector('.mo').remove()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;color:var(--muted2);width:32px;height:32px;cursor:pointer;font-size:14px;flex-shrink:0">✕</button>
+    </div>
+    <div class="mbd">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-bottom:11px">⚡ Interests</div>
+      <div class="chips" style="margin-bottom:20px">${cHtml(INTERESTS,d.interests,'si','interests')}</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-bottom:11px">🛠 Skills</div>
+      <div class="chips" style="margin-bottom:20px">${cHtml(SKILLS,d.skills,'ss','skills')}</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-bottom:11px">👤 Role Goals</div>
+      <div class="chips">${cHtml(ROLES,d.roleGoals,'sr','roleGoals')}</div>
+    </div>
+    <div class="mf">
+      <button class="mb-back" onclick="document.querySelector('.mo').remove()">Cancel</button>
+      <button class="mb-next" id="save-btn">Save & Refresh →</button>
+    </div>
+  </div>`;
+
+  ov.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      const key=c.dataset.key;const l=c.dataset.l;
+      const cls=key==='interests'?'si':key==='skills'?'ss':'sr';
+      const arr=d[key];const idx=arr.indexOf(l);
+      if(idx===-1){arr.push(l);c.classList.add(cls)}else{arr.splice(idx,1);c.classList.remove(cls)}
+    });
+  });
+  ov.querySelector('#save-btn').addEventListener('click',()=>{
+    prof=d;save();ov.remove();renderRec();
+    toast('✅ Profile updated!');
+    document.getElementById('rec-sec').scrollIntoView({behavior:'smooth'});
+  });
+  ov.addEventListener('click',e=>{if(e.target==
